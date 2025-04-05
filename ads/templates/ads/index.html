@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ads list</title>
+</head>
+<body>
+Список вещей для обмена
+{% if ads %}
+    <ul>
+    {% for i_ad in ads.all %}
+        <li><a href="{% url 'ads:ad_detail' i_ad.id %}">{{ i_ad.title }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Нет вещей, доступных для обмена.</p>
+{% endif %}
+</body>
+</html>

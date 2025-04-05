@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add ad</title>
+</head>
+<body>
+    <form method="post">
+        {% csrf_token %}
+        <label for="title">Название:</label><br>
+        <input type="text" id="title" name=""><br>
+        <label for="description">Описание:</label><br>
+        <input type="text" id="description" name=""><br>
+        <label for="category">Категория:</label><br>
+        <input type="text" id="category" name=""><br>
+        <label for="condition">Состояние:</label><br>
+        <input type="text" id="condition" name=""><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
