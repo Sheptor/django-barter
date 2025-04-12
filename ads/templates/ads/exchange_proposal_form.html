@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Exchange proposal</title>
+</head>
+<body>
+{% load static %}
+<link rel="stylesheet" href="{% static 'ads/style.css' %}">
+<br><button onclick="location.href='{% url 'home' %}'" class="navigation-button">Django-barter -> На главную</button>
+<br><div class="ad-card">
+    <form method="post">
+        {% csrf_token %}
+        <p>Ваш товар:
+        <br>{{ form.ad_sender }}
+
+        {% if form.ad_sender.errors %}
+            <div class="ad-error">{{ form.ad_sender.errors }}</div>
+        {% endif %}</p>
+        <p>Обменять на:
+        <br>{{ form.ad_receiver }}
+        {% if form.ad_receiver.errors %}
+            <div class="ad-error">{{ form.ad_receiver.errors }}</div>
+        {% endif %}</p>
+        <p>Комментарий:
+        <br>{{ form.comment }}
+        {% if form.comment.errors %}
+            <div class="ad-error">{{ form.comment.errors }}</div>
+        {% endif %}</p>
+        <br><button type="submit" class="add-button">Создать предложение обмена</button>
+    </form>
+</div>
+</body>
+</html>

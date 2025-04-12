@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Удалить объявление</title>
+</head>
+<body>
+{% load static %}
+<link rel="stylesheet" href="{% static 'ads/style.css' %}">
+<br><button onclick="location.href='{% url 'home' %}'" class="navigation-button">Django-barter -> На главную</button>
+<form method="post">{% csrf_token %}
+    <p>Вы действительно хотите удалить"{{ object }}"?</p>
+    {{ form }}
+    <input type="submit" value="Confirm">
+</form>
+</body>
+</html>

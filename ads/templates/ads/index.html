@@ -2,18 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Ads list</title>
+    <title>Title</title>
 </head>
 <body>
-Список вещей для обмена
-{% if ads %}
-    <ul>
-    {% for i_ad in ads.all %}
-        <li><a href="{% url 'ads:ad_detail' i_ad.id %}">{{ i_ad.title }}</a></li>
-    {% endfor %}
-    </ul>
+{% load static %}
+<link rel="stylesheet" href="{% static 'ads/style.css' %}">
+<br><button onclick="location.href='{% url 'home' %}'" class="navigation-button">Django-barter -> На главную</button>
+<br><button onclick="location.href='{% url 'ads:ads' %}'" class="navigation-button">Список товаров на обмен</button>
+<br><button onclick="location.href='{% url 'ads:exchanges' %}'" class="navigation-button">Список предложений обмена</button>
+{% if user.is_authenticated %}
+    <form action="{% url 'users:logout' %}" method="post">
+        {% csrf_token %}
+        <br><button type="submit" class="add-button">Выход</button>
+    </form>
 {% else %}
-    <p>Нет вещей, доступных для обмена.</p>
+    <br><button onclick="location.href='{% url 'users:login' %}'" class="navigation-button">Авторизация</button>
 {% endif %}
 </body>
 </html>

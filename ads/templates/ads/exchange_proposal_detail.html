@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Exchange proposal {{ exchange_proposal.id }}</title>
+</head>
+<body>
+{% load static %}
+<link rel="stylesheet" href="{% static 'ads/style.css' %}">
+<br><button onclick="location.href='{% url 'home' %}'" class="navigation-button">Django-barter -> На главную</button>
+<h1>Предложение обмена {{ exchange_proposal.id }}</h1>
+<div class="comparison-container">
+    <div class="ad-card">
+        <h2>Обмен товара {{ exchange_proposal.ad_sender.id }}:</h2>
+        <img src="{{ exchange_proposal.ad_sender.image_url }}" alt="{{ exchange_proposal.ad_sender.title }}" class="ad-image">
+        <a href="{% url 'ads:ad_detail' exchange_proposal.ad_sender.id %}" class="ad-link">
+            <h2 class="ad-title">{{ exchange_proposal.ad_sender.title }}</h2>
+        </a>
+        <p class="ad-description">Описание: {{ exchange_proposal.ad_sender.description }}</p>
+        <p class="ad-description">Категория: {{ exchange_proposal.ad_sender.category }}</p>
+        <p class="ad-description">Состояние: {{ exchange_proposal.ad_sender.condition }}</p>
+        <p class="ad-description">Дата публикации: {{ exchange_proposal.ad_sender.created_at }}</p>
+    </div>
+    <div class="ad-card">
+        <h2>Обменять на {{ exchange_proposal.ad_receiver.id }}:</h2>
+        <img src="{{ exchange_proposal.ad_receiver.image_url }}" alt="{{ exchange_proposal.ad_receiver.title }}" class="ad-image">
+        <a href="{% url 'ads:ad_detail' exchange_proposal.ad_receiver.id %}" class="ad-link">
+            <h2 class="ad-title">{{ exchange_proposal.ad_receiver.title }}</h2>
+        </a>
+        <p class="ad-description">Описание: {{ exchange_proposal.ad_receiver.description }}</p>
+        <p class="ad-description">Категория: {{ exchange_proposal.ad_receiver.category }}</p>
+        <p class="ad-description">Состояние: {{ exchange_proposal.ad_receiver.condition }}</p>
+        <p class="ad-description">Дата публикации: {{ exchange_proposal.ad_receiver.created_at }}</p>
+    </div>
+</div>
+<p>Комментарий:
+<br>{{ exchange_proposal.comment }}
+<p>Статус:
+<br>{{ exchange_proposal.status }}
+<p>Дата публикации:
+<br>{{ exchange_proposal.created_at }}
+</p>
+{% if is_owner %}
+    {% if is_delete %}
+        <form method="post">
+            {% csrf_token %}
+            <p>Вы действительно хотите удалить предложение обмена?</p>
+            <button class="delete-button">Удалить безвозвратно</button>
+        </form>
+    {% else %}
+        <button onclick="location.href='{% url 'ads:exchange_proposal_edit' exchange_proposal.pk%}'" class="add-button">Изменить объявление</button>
+        <br><a href="{% url 'ads:exchange_proposal_delete' exchange_proposal.id %}">Удалить объявление</a>
+    {% endif %}
+{% else %}
+    <form method="post">
+            {% csrf_token %}
+            <button value="accept" class="add-button">Принять</button>
+        </form>
+        <form method="post">
+            {% csrf_token %}
+            <button value="reject" class="add-button">Отклонить</button>
+        </form>
+{% endif %}
+</body>
+</html>

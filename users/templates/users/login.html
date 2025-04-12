@@ -1,72 +1,39 @@
-{% extends "admin/base_site.html" %}
-{% block site_name %}
-<div id="site-name">Django-barter<br>Вход</div>
-{% endblock %}
-{% load i18n static %}
-
-{% block title %}{% if form.errors %}{% translate "Error:" %} {% endif %}{{ block.super }}{% endblock %}
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static "admin/css/login.css" %}">
-{{ form.media }}
-{% endblock %}
-
-{% block bodyclass %}{{ block.super }} login{% endblock %}
-
-{% block usertools %}{% endblock %}
-
-{% block nav-global %}{% endblock %}
-
-{% block nav-sidebar %}{% endblock %}
-
-{% block content_title %}{% endblock %}
-
-{% block nav-breadcrumbs %}{% endblock %}
-
-{% block content %}
-{% if form.errors and not form.non_field_errors %}
-<p class="errornote">
-{% blocktranslate count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktranslate %}
-</p>
-{% endif %}
-
-{% if form.non_field_errors %}
-{% for error in form.non_field_errors %}
-<p class="errornote">
-    {{ error }}
-</p>
-{% endfor %}
-{% endif %}
-
-<div id="content-main">
-
-{% if user.is_authenticated %}
-<p class="errornote">
-{% blocktranslate trimmed %}
-    Вы авторизованы как {{ username }}, но не имеете права доступа к этой странице.
-    Хотите ли вы войти в систему под другой учетной записью?
-{% endblocktranslate %}
-</p>
-{% endif %}
-
-<form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
-  <div class="form-row">
-    {{ form.username.errors }}
-    Имя пользователя:<br>{{ form.username }}
-  </div>
-  <div class="form-row">
-    {{ form.password.errors }}
-    Пароль:<br>{{ form.password }}
-    <input type="hidden" name="next" value="{{ next }}">
-  </div>
-  {% url 'admin_password_reset' as password_reset_url %}
-  {% if password_reset_url %}
-  <div class="password-reset-link">
-    <a href="{{ password_reset_url }}">{% translate 'Forgotten your login credentials?' %}</a>
-  </div>
-  {% endif %}
-  <div class="submit-row">
-    <input type="submit" value="{% translate 'Log in' %}">
-  </div>
-</form>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Авторизация</title>
+</head>
+<body>
+{% load static %}
+<link rel="stylesheet" href="{% static 'users/style.css' %}">
+<br><button onclick="location.href='{% url 'home' %}'" class="navigation-button">Django-barter -> На главную</button>
+<br><div class="auth-card">
+    <form action="{{ app_path }}" method="post" id="login-form">
+        {% csrf_token %}
+        <div class="form-row">
+            {{ form.username.errors }}
+            Имя пользователя:<br>{{ form.username }}
+            {% if form.username.errors %}
+            <div class="auth-error">{{ field.username.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-row">
+            <br>Пароль:
+            <br>{{ form.password }}
+            <span class="helptext" id="id_password1_helptext"></span>
+            {% if form.password.errors %}
+            <div class="auth-error">{{ form.password.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="submit-row">
+            <br><button type="submit" class="add-button">Авторизоваться</button>
+        </div>
+        <div class="submit-row">
+            <br><h2>Нет аккаунта?</h2>
+            <button onclick="location.href='{% url 'users:registration' %}'" class="add-button">Регистрация</button>
+        </div>
+    </form>
 </div>
-{% endblock %}
+</body>
+</html>

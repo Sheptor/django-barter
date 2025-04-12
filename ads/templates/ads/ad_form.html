@@ -5,17 +5,26 @@
     <title>Add ad</title>
 </head>
 <body>
-    <form method="post">
+{% load static %}
+<link rel="stylesheet" href="{% static 'ads/style.css' %}">
+<br><button onclick="location.href='{% url 'home' %}'" class="navigation-button">Django-barter -> На главную</button>
+<br><div class="ad-card">
+    <form method="post" class="ad-form">
         {% csrf_token %}
-        <label for="title">Название:</label><br>
-        <input type="text" id="title" name=""><br>
-        <label for="description">Описание:</label><br>
-        <input type="text" id="description" name=""><br>
-        <label for="category">Категория:</label><br>
-        <input type="text" id="category" name=""><br>
-        <label for="condition">Состояние:</label><br>
-        <input type="text" id="condition" name=""><br>
-        <input type="submit" value="Submit">
+
+        <h2 class="ad-title">Создание объявления</h2>
+
+        {% for field in form %}
+        <p></p><div class="form-group">
+            <label class="ad-description">{{ field.label_tag }}</label>
+            <br>{{ field }}
+            {% if field.errors %}
+            <div class="ad-error">{{ field.errors }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        <br><button type="submit" class="add-button">Разместить объявление</button>
     </form>
+</div>
 </body>
 </html>

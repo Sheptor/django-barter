@@ -1,80 +1,42 @@
-{% extends "admin/base_site.html" %}
-{% block site_name %}
-<div id="site-name">Django-barter<br>Регистрация</div>
-{% endblock %}
-{% load i18n static %}
-
-{% block title %}{% if form.errors %}{% translate "Error:" %} {% endif %}{{ block.super }}{% endblock %}
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static "admin/css/login.css" %}">
-{{ form.media }}
-{% endblock %}
-
-{% block bodyclass %}{{ block.super }} login{% endblock %}
-
-{% block usertools %}{% endblock %}
-
-{% block nav-global %}{% endblock %}
-
-{% block nav-sidebar %}{% endblock %}
-
-{% block content_title %}{% endblock %}
-
-{% block nav-breadcrumbs %}{% endblock %}
-
-{% block content %}
-{% if form.errors and not form.non_field_errors %}
-<p class="errornote">
-{% blocktranslate count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktranslate %}
-</p>
-{% endif %}
-
-{% if form.non_field_errors %}
-{% for error in form.non_field_errors %}
-<p class="errornote">
-    {{ error }}
-</p>
-{% endfor %}
-{% endif %}
-
-<div id="content-main">
-
-{% if user.is_authenticated %}
-<p class="errornote">
-{% blocktranslate trimmed %}
-    You are authenticated as {{ username }}, but are not authorized to
-    access this page. Would you like to login to a different account?
-{% endblocktranslate %}
-</p>
-{% endif %}
-
-<form action="{{ app_path }}" method="post" id="login-form">
-{% csrf_token %}
-<p>
-<label for="id_username">Имя пользователя:</label>
-<br><input type="text" name="username" maxlength="150" autofocus="" required="" aria-describedby="id_username_helptext" id="id_username">
-<span class="helptext" id="id_username_helptext"><br>Обязательно. До 150 символов. Только буквы, цифры и @/./+/-/_.</span>
-</p>
-<p>
-<label for="id_password1">Пароль:</label>
-<br><input type="password" name="password1" autocomplete="new-password" required="" aria-describedby="id_password1_helptext" id="id_password1" aria-autocomplete="list">
-<span class="helptext" id="id_password1_helptext"></span>
-</p>
-<p>
-<label for="id_password2">Подтверждение пароля (Повторите пароль для подтверждения.):</label>
-<br><input type="password" name="password2" autocomplete="new-password" required="" aria-describedby="id_password2_helptext" id="id_password2">
-</p>
-    <p>
-    <ul>
-        <li>Ваш пароль не должен быть слишком похож на другие ваши персональные данные.</li>
-        <li>Ваш пароль должен содержать не менее 8 символов.</li>
-        <li>Ваш пароль не может быть часто используемым паролем.</li>
-        <li>Ваш пароль не может состоять только из цифр.</li>
-    </ul>
-    </p>
-  <div class="submit-row">
-    <input type="submit" value="{% translate 'Зарегистрироваться' %}">
-  </div>
-</form>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+</head>
+<body>
+{% load static %}
+<link rel="stylesheet" href="{% static 'users/style.css' %}">
+<br><button onclick="location.href='{% url 'home' %}'" class="navigation-button">Django-barter -> На главную</button>
+<br><div class="auth-card">
+    <form action="{{ app_path }}" method="post" id="login-form">
+        {% csrf_token %}
+        <div class="form-row">
+            <label class="auth-description">Имя пользователя:</label>
+            <br>{{ form.username }}
+            {% if form.username.errors %}
+            <div class="auth-error">{{ form.username.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-row">
+            <br>Пароль:
+            <br>{{ form.password1 }}
+            <span class="helptext" id="id_password1_helptext"></span>
+            {% if form.password1.errors %}
+            <div class="auth-error">{{ form.password1.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-row">
+            <br>Подтверждение пароля:
+            <br>{{ form.password2 }}
+            {% if form.password2.errors %}
+            <div class="auth-error">{{ form.password2.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="submit-row">
+            <br><button type="submit" class="add-button">Зарегистрироваться</button>
+        </div>
+    </form>
 </div>
-{% endblock %}
+</body>
+</html>

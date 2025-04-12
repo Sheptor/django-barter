@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Предложения обмена</title>
+</head>
+<body>
+{% load static %}
+<link rel="stylesheet" href="{% static 'ads/style.css' %}">
+<br><button onclick="location.href='{% url 'home' %}'" class="navigation-button">Django-barter -> На главную</button>
+<h1>Список предложений обмена:</h1>
+<button onclick="location.href='{% url 'ads:new_exchange_proposal' %}'" class="add-button">Создать предложение обмена</button>
+<br><div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; первая</a>
+            <a href="?page={{ page_obj.previous_page_number }}">предыдущая</a>
+        {% endif %}
+
+        <span class="current">
+            Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">следующая</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">последняя &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+{% if page_obj %}
+    <div class="ad-grid">
+        {% for exchange in page_obj %}
+            <div class="ad-card">
+                <a href="{% url 'ads:exchange_proposal_detail' exchange.id %}" class="ad-link">
+                    <h1 class="ad-title">Предложение {{ exchange.id }}</h1>
+                </a>
+                <a href="{% url 'ads:ad_detail' exchange.ad_sender.id %}" class="ad-link">
+                    <h2 class="ad-title">{{ exchange.ad_sender.title }}</h2>
+                </a>
+                <a href="{% url 'ads:ad_detail' exchange.ad_receiver.id %}" class="ad-link">
+                    <h2 class="ad-title">{{ exchange.ad_receiver.title }}</h2>
+                </a>
+                <p class="ad-description">Комментарий: {{ exchange.comment }}</p>
+                <p class="ad-description">Статус: {{ exchange.status }}</p>
+                <p class="ad-description">Дата публикации: {{ exchange.created_at }}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>Нет предложений обмена.</p>
+{% endif %}
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; первая</a>
+            <a href="?page={{ page_obj.previous_page_number }}">предыдущая</a>
+        {% endif %}
+
+        <span class="current">
+            Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">следующая</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">последняя &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+</body>
+</html>
