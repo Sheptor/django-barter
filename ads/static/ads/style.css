@@ -9,15 +9,44 @@ body {
 }
 
 .ad-card {
+    max-width: 1200px;
     background: white;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.4);
     padding: 15px;
-    transition: transform 0.2s;
+    word-wrap: break-word;
+}
+
+.ad-card-in-comparison {
+    min-width: 50%;
+    max-width: 50%;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    padding: 15px;
+    word-wrap: break-word;
+}
+
+.ad-description-in-comparison {
+    color: black;
+    line-height: 1em;
+    overflow: visible;
+}
+
+.ad-category-in-comparison {
+    color: black;
+    line-height: 1em;
+    overflow: visible;
+}
+
+.ad-created-at-in-comparison {
+    color: black;
+    line-height: 1em;
+    overflow: visible;
 }
 
 .comparison-container {
-    width: 100%;
+    width: 50%;
     max-width: 1200px;
     display: flex;
     justify-content: center;
@@ -27,6 +56,8 @@ body {
 h1 {
     color: black;
     text-align: center;
+    word-wrap: break-word;
+    overflow: hidden;
 }
 
 .ad-grid {
@@ -45,14 +76,27 @@ h1 {
     border-radius: 4px;
 }
 
-.ad-title {
-    font-size: 1.2em;
-    margin-bottom: 10px;
+h2.ad-title {
+    border-radius: 5px;
+    padding: 10px;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+    overflow: hidden;
+    height: 3em;
+}
+
+.ad-description-short {
+    color: black;
+    line-height: 1em;
+    overflow: hidden;
+    height: 3em;
 }
 
 .ad-description {
     color: black;
-    line-height: 1;
+    line-height: 1em;
+    overflow: visible;
+    height: 5em;
 }
 
 .ad-error {
@@ -103,4 +147,30 @@ h1 {
     background-color: #200000;
     color: #ffffff;
     border-color: #ffffff;
+}
+
+.accept-button {
+    font-size: 1.9rem;
+    padding: 15px 30px;
+    display: inline-block;
+    border-radius: 8px;
+    background: #0f0;
+    color: #ffffff;
+}
+
+.accept-button:hover {
+    background: #197819;
+}
+
+.reject-button {
+    font-size: 1.9rem;
+    padding: 15px 30px;
+    display: inline-block;
+    border-radius: 8px;
+    background: #f00;
+    color: #ffffff;
+}
+
+.reject-button:hover {
+    background: #781414;
 }

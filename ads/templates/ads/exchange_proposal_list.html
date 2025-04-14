@@ -40,9 +40,9 @@
                 <a href="{% url 'ads:ad_detail' exchange.ad_receiver.id %}" class="ad-link">
                     <h2 class="ad-title">{{ exchange.ad_receiver.title }}</h2>
                 </a>
-                <p class="ad-description">Комментарий: {{ exchange.comment }}</p>
-                <p class="ad-description">Статус: {{ exchange.status }}</p>
-                <p class="ad-description">Дата публикации: {{ exchange.created_at }}</p>
+                <p class="ad-description-short">Комментарий: {{ exchange.comment }}</p>
+                <p class="ad-description-short">Статус: {{ exchange.status }}</p>
+                <p class="ad-description-short">Дата публикации: {{ exchange.created_at }}</p>
             </div>
         {% endfor %}
     </div>

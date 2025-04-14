@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 from django import forms
 from .models import Ad, ExchangeProposal
+from django.db.models import Q
 
 
 class NewAdForm(forms.ModelForm):
@@ -9,8 +10,6 @@ class NewAdForm(forms.ModelForm):
         exclude = ["user"]
 
 class NewExchangeProposalForm(forms.ModelForm):
-    ad_sender = forms.ModelChoiceField(queryset=Ad.objects.all(), widget=forms.NumberInput())
-    ad_receiver = forms.ModelChoiceField(queryset=Ad.objects.all(), widget=forms.NumberInput())
     comment = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"rows": 3}))
 
     class Meta:
@@ -20,6 +19,8 @@ class NewExchangeProposalForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
+        self.fields["ad_sender"].queryset = Ad.objects.filter(user=self.user)
+        self.fields["ad_receiver"].queryset = Ad.objects.filter(~Q(user=self.user))
 
     def clean_ad_sender(self):
         ad_sender = self.cleaned_data["ad_sender"]

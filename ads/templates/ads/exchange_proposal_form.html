@@ -12,7 +12,7 @@
     <form method="post">
         {% csrf_token %}
         <p>Ваш товар:
-        <br>{{ form.ad_sender }}
+        <br>{{ form.ad_sender }}{{ form.ad_sender.id }}
 
         {% if form.ad_sender.errors %}
             <div class="ad-error">{{ form.ad_sender.errors }}</div>

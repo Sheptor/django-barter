@@ -23,7 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 load_dotenv()
-SECRET_KEY = os.getenv("SECRET_KEY")
+if os.getenv("SECRET_KEY") is not None:
+    SECRET_KEY = os.getenv("SECRET_KEY")
+else:
+    raise ValueError("Сгенерируйте и запишите в .env файл SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

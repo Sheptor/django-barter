@@ -11,7 +11,9 @@
 {% block content %}
 <br><div class="ad-card">
     <h1 class="ad-title">Объявление {{ ad.id }}</h1>
-    <img src="{{ ad.image_url }}" alt="{{ ad.title }}" class="ad-image">
+    {% if ad.image_url %}
+        <img src="{{ ad.image_url }}" alt="{{ ad.title }}" class="ad-image">
+    {% endif %}
     <a href="{% url 'ads:ad_detail' ad.id %}" class="ad-link">
         <h2 class="ad-title">{{ ad.title }}</h2>
     </a>
@@ -37,7 +39,8 @@
                 <p>Вы действительно хотите удалить объявление?</p>
                 <button class="delete-button">Удалить безвозвратно</button>
             </form>
-    {% else %}
+    {% endif %}
+    {% if is_owner %}
         <br><a href="{% url 'ads:ad_delete' ad.pk %}">Удалить объявление</a>
     {% endif %}
 </div>

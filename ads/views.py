@@ -3,6 +3,7 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect
 from django.views import generic
 from django.urls import reverse_lazy
+from django.db.models import Q
 
 from .forms import NewAdForm, NewExchangeProposalForm
 from .models import Ad, ExchangeProposal
@@ -99,10 +100,10 @@ class ExchangeProposalListView(LoginRequiredMixin, generic.ListView):
     paginate_by = 15
 
     def get_queryset(self):
-        return ExchangeProposal.objects.filter(ad_sender__user=self.request.user).all()
+        return ExchangeProposal.objects.filter(Q(ad_sender__user=self.request.user) | Q(ad_receiver__user=self.request.user)).all()
 
 
-class CreateExchangeProposalView(generic.CreateView):
+class CreateExchangeProposalView(LoginRequiredMixin, generic.CreateView):
     model = ExchangeProposal
     form_class = NewExchangeProposalForm
     template_name = "ads/exchange_proposal_form.html"
@@ -110,6 +111,7 @@ class CreateExchangeProposalView(generic.CreateView):
     def get_initial(self):
         initial = super().get_initial()
         ad_id = self.kwargs.get("ad_id")
+
         if ad_id:
             initial["ad_receiver"] = get_object_or_404(Ad, id=ad_id)
         return initial
@@ -132,7 +134,7 @@ class CreateExchangeProposalView(generic.CreateView):
         return reverse_lazy("ads:exchange_proposal_detail", kwargs={"pk": self.object.id})
 
 
-class ExchangeProposalDetailView(generic.DetailView):
+class ExchangeProposalDetailView(LoginRequiredMixin, generic.DetailView):
     model = ExchangeProposal
     template_name = "ads/exchange_proposal_detail.html"
     context_object_name = "exchange_proposal"
@@ -156,7 +158,7 @@ class ExchangeProposalDetailView(generic.DetailView):
         return exchange
 
 
-class ExchangeProposalEditView(generic.UpdateView):
+class ExchangeProposalEditView(LoginRequiredMixin, generic.UpdateView):
     model = ExchangeProposal
     form_class = NewExchangeProposalForm
     template_name = "ads/exchange_proposal_form.html"

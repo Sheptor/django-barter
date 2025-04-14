@@ -10,27 +10,31 @@
 <br><button onclick="location.href='{% url 'home' %}'" class="navigation-button">Django-barter -> На главную</button>
 <h1>Предложение обмена {{ exchange_proposal.id }}</h1>
 <div class="comparison-container">
-    <div class="ad-card">
+    <div class="ad-card-in-comparison">
         <h2>Обмен товара {{ exchange_proposal.ad_sender.id }}:</h2>
-        <img src="{{ exchange_proposal.ad_sender.image_url }}" alt="{{ exchange_proposal.ad_sender.title }}" class="ad-image">
+        {% if exchange_proposal.ad_sender.image_url %}
+            <img src="{{ exchange_proposal.ad_sender.image_url }}" alt="{{ exchange_proposal.ad_sender.title }}" class="ad-image">
+        {% endif %}
         <a href="{% url 'ads:ad_detail' exchange_proposal.ad_sender.id %}" class="ad-link">
             <h2 class="ad-title">{{ exchange_proposal.ad_sender.title }}</h2>
         </a>
-        <p class="ad-description">Описание: {{ exchange_proposal.ad_sender.description }}</p>
-        <p class="ad-description">Категория: {{ exchange_proposal.ad_sender.category }}</p>
-        <p class="ad-description">Состояние: {{ exchange_proposal.ad_sender.condition }}</p>
-        <p class="ad-description">Дата публикации: {{ exchange_proposal.ad_sender.created_at }}</p>
+        <p class="ad-description-in-comparison">Описание: {{ exchange_proposal.ad_sender.description }}</p>
+        <p class="ad-category-in-comparison">Категория: {{ exchange_proposal.ad_sender.category }}</p>
+        <p class="ad-category-in-comparison">Состояние: {{ exchange_proposal.ad_sender.condition }}</p>
+        <p class="created-at-in-comparison">Дата публикации: {{ exchange_proposal.ad_sender.created_at }}</p>
     </div>
-    <div class="ad-card">
+    <div class="ad-card-in-comparison">
         <h2>Обменять на {{ exchange_proposal.ad_receiver.id }}:</h2>
-        <img src="{{ exchange_proposal.ad_receiver.image_url }}" alt="{{ exchange_proposal.ad_receiver.title }}" class="ad-image">
+        {% if exchange_proposal.ad_receiver.image_url %}
+            <img src="{{ exchange_proposal.ad_receiver.image_url }}" alt="{{ exchange_proposal.ad_receiver.title }}" class="ad-image">
+        {% endif %}
         <a href="{% url 'ads:ad_detail' exchange_proposal.ad_receiver.id %}" class="ad-link">
             <h2 class="ad-title">{{ exchange_proposal.ad_receiver.title }}</h2>
         </a>
-        <p class="ad-description">Описание: {{ exchange_proposal.ad_receiver.description }}</p>
-        <p class="ad-description">Категория: {{ exchange_proposal.ad_receiver.category }}</p>
-        <p class="ad-description">Состояние: {{ exchange_proposal.ad_receiver.condition }}</p>
-        <p class="ad-description">Дата публикации: {{ exchange_proposal.ad_receiver.created_at }}</p>
+        <p class="ad-description-in-comparison">Описание: {{ exchange_proposal.ad_receiver.description }}</p>
+        <p class="ad-category-in-comparison">Категория: {{ exchange_proposal.ad_receiver.category }}</p>
+        <p class="ad-category-in-comparison">Состояние: {{ exchange_proposal.ad_receiver.condition }}</p>
+        <p class="created-at-in-comparison">Дата публикации: {{ exchange_proposal.ad_receiver.created_at }}</p>
     </div>
 </div>
 <p>Комментарий:
@@ -54,11 +58,11 @@
 {% else %}
     <form method="post">
             {% csrf_token %}
-            <button value="accept" class="add-button">Принять</button>
+        <button value="accept" class="accept-button"><b>V</b> Принять</button>
         </form>
         <form method="post">
             {% csrf_token %}
-            <button value="reject" class="add-button">Отклонить</button>
+            <button value="reject" class="reject-button"><b>X</b> Отклонить</button>
         </form>
 {% endif %}
 </body>
