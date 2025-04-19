@@ -42,6 +42,9 @@
                 <p class="ad-description-short">Категория: {{ ad.category }}</p>
                 <p class="ad-description-short">Состояние: {{ ad.condition }}</p>
                 <p class="ad-description-short">Дата публикации: {{ ad.created_at }}</p>
+                {% if ad.user == user %}
+                    <h2 class="ad-owner">(*Ваше объявление*)</h2>
+                {% endif %}
             </div>
         {% endfor %}
     </div>

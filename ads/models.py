@@ -16,13 +16,24 @@ class Ad(models.Model):
 
 
 class ExchangeProposal(models.Model):
+    ALLOWED_STATUSES = {"waiting", "accepted", "rejected"}
     ad_sender = models.ForeignKey(Ad, on_delete=models.CASCADE, related_name="sender", default="", verbose_name="Ваш товар")
     ad_receiver = models.ForeignKey(Ad, on_delete=models.CASCADE, related_name="receiver", default="", verbose_name="Обменять на")
     comment = models.CharField(max_length=500, verbose_name="Комментарий", default="")
     status = models.CharField(choices=[
-        ("waiting", "ожидает"), ("accepted", "принята"), ("rejected", "отклонена")
-    ], default="ожидает", verbose_name="Статус предложения")
+        ("waiting", "ожидает"), ("accepted", "принят"), ("rejected", "отклонен")
+    ], default="waiting", verbose_name="Статус предложения")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации предложения")
 
     def __str__(self):
         return f"{self.ad_sender} - {self.ad_receiver}"
+
+    class Meta:
+        unique_together = ("ad_sender", "ad_receiver")
+
+    def set_status(self, new_status):
+        if new_status in self.ALLOWED_STATUSES:
+            self.status = new_status
+            self.save()
+        else:
+            raise ValueError("Недопустимый статус")

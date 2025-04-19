@@ -26,7 +26,11 @@
         <br>{{ form.comment }}
         {% if form.comment.errors %}
             <div class="ad-error">{{ form.comment.errors }}</div>
-        {% endif %}</p>
+        {% endif %}
+        </p>
+        {% if form.exchange.errors %}
+            <div class="ad-error">{{ form.exchange.errors }}</div>
+        {% endif %}
         <br><button type="submit" class="add-button">Создать предложение обмена</button>
     </form>
 </div>

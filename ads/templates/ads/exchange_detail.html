@@ -40,7 +40,7 @@
 <p>Комментарий:
 <br>{{ exchange_proposal.comment }}
 <p>Статус:
-<br>{{ exchange_proposal.status }}
+<br>{{ exchange_proposal.get_status_display }}
 <p>Дата публикации:
 <br>{{ exchange_proposal.created_at }}
 </p>
@@ -52,18 +52,22 @@
             <button class="delete-button">Удалить безвозвратно</button>
         </form>
     {% else %}
-        <button onclick="location.href='{% url 'ads:exchange_proposal_edit' exchange_proposal.pk%}'" class="add-button">Изменить объявление</button>
-        <br><a href="{% url 'ads:exchange_proposal_delete' exchange_proposal.id %}">Удалить объявление</a>
+        <button onclick="location.href='{% url 'ads:exchange_edit' exchange_proposal.pk%}'" class="add-button">Изменить объявление</button>
+        <br><a href="{% url 'ads:exchange_delete' exchange_proposal.id %}">Удалить объявление</a>
     {% endif %}
 {% else %}
-    <form method="post">
-            {% csrf_token %}
-        <button value="accept" class="accept-button"><b>V</b> Принять</button>
-        </form>
+    {% if exchange_proposal.status == "waiting" %}
         <form method="post">
             {% csrf_token %}
-            <button value="reject" class="reject-button"><b>X</b> Отклонить</button>
+            <button value="accept" name="set-status-button" class="accept-button"><b>V</b> Принять</button>
+            <button value="reject" name="set-status-button" class="reject-button"><b>X</b> Отклонить</button>
         </form>
+    {% elif exchange_proposal.status == "rejected" %}
+        <form method="post">
+            {% csrf_token %}
+            <button value="recreate" name="set-status-button" class="add-button">Предложить снова</button>
+        </form>
+    {% endif %}
 {% endif %}
 </body>
 </html>

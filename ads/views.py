@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.views import generic
 from django.urls import reverse_lazy
 from django.db.models import Q
+from django.http import HttpResponseRedirect
 
 from .forms import NewAdForm, NewExchangeProposalForm
 from .models import Ad, ExchangeProposal
@@ -95,9 +96,15 @@ class AdDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 class ExchangeProposalListView(LoginRequiredMixin, generic.ListView):
     model = ExchangeProposal
-    template_name = "ads/exchange_proposal_list.html"
+    template_name = "ads/exchange_list.html"
     context_object_name = "exchanges_list"
     paginate_by = 15
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["user_have_exchanges"] = Ad.objects.filter(user=self.request.user).exists()
+
+        return context
 
     def get_queryset(self):
         return ExchangeProposal.objects.filter(Q(ad_sender__user=self.request.user) | Q(ad_receiver__user=self.request.user)).all()
@@ -106,18 +113,18 @@ class ExchangeProposalListView(LoginRequiredMixin, generic.ListView):
 class CreateExchangeProposalView(LoginRequiredMixin, generic.CreateView):
     model = ExchangeProposal
     form_class = NewExchangeProposalForm
-    template_name = "ads/exchange_proposal_form.html"
+    template_name = "ads/exchange_form.html"
 
     def get_initial(self):
         initial = super().get_initial()
         ad_id = self.kwargs.get("ad_id")
 
         if ad_id:
-            initial["ad_receiver"] = get_object_or_404(Ad, id=ad_id)
+            initial["ad_receiver"] = ad_id
         return initial
 
     def form_valid(self, form):
-        return super(CreateExchangeProposalView, self).form_valid(form)
+        return super().form_valid(form)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -131,12 +138,12 @@ class CreateExchangeProposalView(LoginRequiredMixin, generic.CreateView):
             return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
-        return reverse_lazy("ads:exchange_proposal_detail", kwargs={"pk": self.object.id})
+        return reverse_lazy("ads:exchange_detail", kwargs={"pk": self.object.id})
 
 
 class ExchangeProposalDetailView(LoginRequiredMixin, generic.DetailView):
     model = ExchangeProposal
-    template_name = "ads/exchange_proposal_detail.html"
+    template_name = "ads/exchange_detail.html"
     context_object_name = "exchange_proposal"
 
     def get_context_data(self, **kwargs):
@@ -157,15 +164,30 @@ class ExchangeProposalDetailView(LoginRequiredMixin, generic.DetailView):
 
         return exchange
 
+    def post(self, request, *args, **kwargs):
+        exchange = self.get_object()
+        if request.user == exchange.ad_receiver.user:
+            action = request.POST.get("set-status-button", None)
+            if action == "accept":
+                exchange.set_status("accepted")
+            elif action == "reject":
+                exchange.set_status("rejected")
+            elif action == "recreate":
+                exchange.ad_sender, exchange.ad_receiver = exchange.ad_receiver, exchange.ad_sender
+                exchange.set_status("waiting")
+            return HttpResponseRedirect(reverse_lazy("ads:exchange_detail", kwargs={"pk": exchange.id}))
+        else:
+            raise PermissionDenied("Только получатель может изменять статус предложения")
+
 
 class ExchangeProposalEditView(LoginRequiredMixin, generic.UpdateView):
     model = ExchangeProposal
     form_class = NewExchangeProposalForm
-    template_name = "ads/exchange_proposal_form.html"
+    template_name = "ads/exchange_form.html"
     context_object_name = "exchange_proposal"
 
     def get_success_url(self):
-        return reverse_lazy("ads:exchange_proposal_detail", kwargs={"pk": self.object.id})
+        return reverse_lazy("ads:exchange_detail", kwargs={"pk": self.object.id})
 
     def get_object(self, queryset=None):
         exchange = get_object_or_404(ExchangeProposal, pk=self.kwargs.get("pk"))
@@ -176,7 +198,7 @@ class ExchangeProposalEditView(LoginRequiredMixin, generic.UpdateView):
 
 class ExchangeProposalDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = ExchangeProposal
-    template_name = "ads/exchange_proposal_detail.html"
+    template_name = "ads/exchange_detail.html"
     context_object_name = "exchange_proposal"
 
     def get_context_data(self, **kwargs):
@@ -188,8 +210,14 @@ class ExchangeProposalDeleteView(LoginRequiredMixin, generic.DeleteView):
     def get_object(self, queryset=None):
         exchange = get_object_or_404(ExchangeProposal, pk=self.kwargs.get("pk"))
         if exchange.ad_sender.user != self.request.user:
-            raise PermissionDenied("У вас нет прав для изменения владельца объявления")
+            raise PermissionDenied("У вас не достаточно прав для изменения объявления")
         return exchange
+
+    def form_invalid(self, form):
+        super().form_valid(form)
+        print(form["ad_sender"])
+        print(form["ad_receiver"])
+        raise PermissionDenied("123")
 
     def get_success_url(self):
         return reverse_lazy("ads:exchanges")

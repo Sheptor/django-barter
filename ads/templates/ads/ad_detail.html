@@ -23,7 +23,7 @@
     <p class="ad-description">Дата публикации: {{ ad.created_at }}</p>
     {% if not is_owner and not is_delete %}
         {% if user_have_ads %}
-            <br><button onclick="location.href='{% url 'ads:new_exchange_proposal' ad.id %}'" class="add-button">Предложить обмен</button>
+            <br><button onclick="location.href='{% url 'ads:new_exchange' ad.id %}'" class="add-button">Предложить обмен</button>
         {% else %}
             <br><h2>У вас еще нет объявлений для обмена.
             <br>Для обмена сначала создайте своё:</h2>

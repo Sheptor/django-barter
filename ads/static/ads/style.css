@@ -53,6 +53,10 @@ body {
     gap: 30px;
 }
 
+h2.ad-owner {
+    color: #baa800;
+}
+
 h1 {
     color: black;
     text-align: center;

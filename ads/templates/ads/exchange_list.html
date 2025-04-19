@@ -9,7 +9,12 @@
 <link rel="stylesheet" href="{% static 'ads/style.css' %}">
 <br><button onclick="location.href='{% url 'home' %}'" class="navigation-button">Django-barter -> На главную</button>
 <h1>Список предложений обмена:</h1>
-<button onclick="location.href='{% url 'ads:new_exchange_proposal' %}'" class="add-button">Создать предложение обмена</button>
+{% if user_have_exchanges %}
+    <button onclick="location.href='{% url 'ads:new_exchange' %}'" class="add-button">Создать предложение обмена</button>
+{% else %}
+    <h2>Вам нечего предложить в обмен!</h2>
+    <button onclick="location.href='{% url 'ads:new_ad' %}'" class="add-button">Создать объявление</button>
+{% endif %}
 <br><div class="pagination">
     <span class="step-links">
         {% if page_obj.has_previous %}
@@ -31,7 +36,7 @@
     <div class="ad-grid">
         {% for exchange in page_obj %}
             <div class="ad-card">
-                <a href="{% url 'ads:exchange_proposal_detail' exchange.id %}" class="ad-link">
+                <a href="{% url 'ads:exchange_detail' exchange.id %}" class="ad-link">
                     <h1 class="ad-title">Предложение {{ exchange.id }}</h1>
                 </a>
                 <a href="{% url 'ads:ad_detail' exchange.ad_sender.id %}" class="ad-link">
@@ -41,8 +46,11 @@
                     <h2 class="ad-title">{{ exchange.ad_receiver.title }}</h2>
                 </a>
                 <p class="ad-description-short">Комментарий: {{ exchange.comment }}</p>
-                <p class="ad-description-short">Статус: {{ exchange.status }}</p>
+                <p class="ad-description-short">Статус: {{ exchange.get_status_display }}</p>
                 <p class="ad-description-short">Дата публикации: {{ exchange.created_at }}</p>
+                {% if exchange.ad_sender.user == user %}
+                    <h2 class="ad-owner">(*Вы инициатор*)</h2>
+                {% endif %}
             </div>
         {% endfor %}
     </div>

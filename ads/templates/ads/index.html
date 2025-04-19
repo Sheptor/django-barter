@@ -13,7 +13,7 @@
 {% if user.is_authenticated %}
     <form action="{% url 'users:logout' %}" method="post">
         {% csrf_token %}
-        <br><button type="submit" class="add-button">Выход</button>
+        <br><h1>{{ user.username }}</h1><button type="submit" class="add-button">Выход</button>
     </form>
 {% else %}
     <br><button onclick="location.href='{% url 'users:login' %}'" class="navigation-button">Авторизация</button>
