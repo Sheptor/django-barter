@@ -10,11 +10,88 @@
 <br><button onclick="location.href='{% url 'home' %}'" class="navigation-button">Django-barter -> На главную</button>
 <h1>Список вещей для обмена:</h1>
 <button onclick="location.href='{% url 'ads:new_ad' %}'" class="add-button">Добавить свое объявление</button>
+
+<br><div class="filters-container">
+
+    <!--Поиск по ключевым словам-->
+    <form method="get" class="filter-form">
+        <div class="filter-group">
+            <input type="text" name="search"
+                   placeholder="Поиск по ключевым словам"
+                   value="{{ request.GET.search }}">
+        </div>
+
+        <!--Фильтрация по категориям-->
+        <div class="filter-group">
+            <select name="category">
+                <option value="">Все категории</option>
+                {% for i_category in categories_list %}
+                    <option value="{{ i_category }}"
+                        {% if request.GET.category == i_category %}
+                            selected
+                        {% endif %}>
+                        {{ i_category }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!--Фильтрация по состоянию-->
+        <div class="filter-group">
+            <select name="condition">
+                <option value="">Любое состояние</option>
+                {% for i_condition in conditions_list %}
+                    <option value="{{ i_condition }}"
+                        {% if request.GET.condition == i_condition %}
+                            selected
+                        {% endif %}>
+                        {{ i_condition }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!--Порядок отображения-->
+        <div class="filter-group">
+            <select name="ordering">
+                <option value="-created_at"
+                    {% if request.GET.ordering == "-created_at" %}
+                        selected
+                    {% endif %}>
+                    Сначала новые
+                </option>
+                <option value="created_at"
+                    {% if request.GET.ordering == "created_at" %}
+                        selected
+                    {% endif %}>
+                    Сначала старые
+                </option>
+                <option value="title"
+                    {% if request.GET.ordering == "title" %}
+                        selected
+                    {% endif %}>
+                    По названию (А-Я)
+                </option>
+                <option value="-title"
+                    {% if request.GET.ordering == "-title" %}
+                        selected
+                    {% endif %}>
+                    По названию (Я-А)
+                </option>
+            </select>
+        </div>
+
+        <button type="submit" class="filter-button">Применить фильтры</button>
+        <a href="?" class="reset">Сбросить</a>
+    </form>
+</div>
+
+<!--Верхняя пагинация-->
 <br><div class="pagination">
     <span class="step-links">
         {% if page_obj.has_previous %}
-            <a href="?page=1">&laquo; первая</a>
-            <a href="?page={{ page_obj.previous_page_number }}">предыдущая</a>
+            <a href="?page=1&{{ current_params }}">&laquo; первая</a>
+            <a href="?page={{ page_obj.previous_page_number }}&{{ current_params }}">предыдущая</a>
         {% endif %}
 
         <span class="current">
@@ -22,11 +99,13 @@
         </span>
 
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}">следующая</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}">последняя &raquo;</a>
+            <a href="?page={{ page_obj.next_page_number }}&{{ current_params }}">следующая</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}&{{ current_params }}">последняя &raquo;</a>
         {% endif %}
     </span>
 </div>
+
+<!--Отображение товаров-->
 {% if page_obj %}
     <div class="ad-grid">
         {% for ad in page_obj %}
@@ -51,11 +130,13 @@
 {% else %}
     <p>Нет вещей, доступных для обмена.</p>
 {% endif %}
+
+<!--Нижняя пагинация-->
 <div class="pagination">
     <span class="step-links">
         {% if page_obj.has_previous %}
-            <a href="?page=1">&laquo; первая</a>
-            <a href="?page={{ page_obj.previous_page_number }}">предыдущая</a>
+            <a href="?page=1&{{ current_params }}">&laquo; первая</a>
+            <a href="?page={{ page_obj.previous_page_number }}&{{ current_params }}">предыдущая</a>
         {% endif %}
 
         <span class="current">
@@ -63,8 +144,8 @@
         </span>
 
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}">следующая</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}">последняя &raquo;</a>
+            <a href="?page={{ page_obj.next_page_number }}&{{ current_params }}">следующая</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}&{{ current_params }}">последняя &raquo;</a>
         {% endif %}
     </span>
 </div>

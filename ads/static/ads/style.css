@@ -8,6 +8,40 @@ body {
     align-items: center;
 }
 
+.filter-form {
+    display: grid;
+    gap: 10px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-group select {
+    color: black;
+    line-height: 1em;
+    overflow: visible;
+    height: 2em;
+    border-radius: 5px;
+}
+.filter-group input {
+    color: black;
+    line-height: 1em;
+    overflow: visible;
+    height: 2em;
+    width: 250px;
+    border-radius: 5px;
+}
+
+.filter-button {
+    color: black;
+    line-height: 1em;
+    overflow: visible;
+    height: 2em;
+    border-radius: 5px;
+}
+
 .ad-card {
     max-width: 1200px;
     background: white;

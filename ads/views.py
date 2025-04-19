@@ -1,3 +1,5 @@
+import re
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect
@@ -15,12 +17,44 @@ class HomeView(generic.TemplateView):
 
 
 class AllAddsView(generic.ListView):
+    page_pattern = re.compile(r"page=\d+&?")
     template_name = "ads/ads_list.html"
     context_object_name = "ads"
     paginate_by = 15
 
     def get_queryset(self):
-        return Ad.objects.all()
+        ads_queryset = Ad.objects.all()
+
+        category = self.request.GET.get("category")
+        if category:
+            ads_queryset = ads_queryset.filter(category=category)
+
+        condition = self.request.GET.get("condition")
+        if condition:
+            ads_queryset = ads_queryset.filter(condition=condition)
+
+        ordering = self.request.GET.get("ordering", "-created_at")
+        if ordering in {"created_at", "-created_at", "title", "-title"}:
+            ads_queryset = ads_queryset.order_by(ordering)
+
+        search = self.request.GET.get("search")
+        if search:
+            ads_queryset = ads_queryset.filter(
+                Q(title__contains=search) |
+                Q(category__contains=search) |
+                Q(description__contains=search)
+            )
+
+        return ads_queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["categories_list"] = Ad.objects.values_list("category", flat=True).distinct()
+        context["conditions_list"] = Ad.objects.values_list("condition", flat=True).distinct()
+        query_params = self.request.GET.urlencode()
+        query_params = re.sub(self.page_pattern, "", query_params)
+        context["current_params"] = query_params
+        return context
 
 
 class CreateAdView(LoginRequiredMixin, generic.CreateView):
