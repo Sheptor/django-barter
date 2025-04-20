@@ -23,7 +23,11 @@
             {% endif %}
         </div>
         {% endfor %}
-        <br><button type="submit" class="add-button">Разместить объявление</button>
+        {% if is_edit %}
+            <br><button type="submit" class="add-button">Изменить</button>
+        {% else %}
+            <br><button type="submit" class="add-button">Предварительный просмотр</button>
+        {% endif %}
     </form>
 </div>
 </body>

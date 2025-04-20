@@ -31,7 +31,11 @@
         {% if form.exchange.errors %}
             <div class="ad-error">{{ form.exchange.errors }}</div>
         {% endif %}
-        <br><button type="submit" class="add-button">Создать предложение обмена</button>
+        {% if is_edit %}
+            <br><button type="submit" class="add-button">Изменить</button>
+        {% else %}
+            <br><button type="submit" class="add-button">Предварительный просмотр</button>
+        {% endif %}
     </form>
 </div>
 </body>

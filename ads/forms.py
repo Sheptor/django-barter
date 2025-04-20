@@ -11,15 +11,20 @@ class NewAdForm(forms.ModelForm):
 class NewExchangeProposalForm(forms.ModelForm):
     ad_sender = forms.IntegerField(min_value=1)
     ad_receiver = forms.IntegerField(min_value=1)
-    comment = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"rows": 3}))
+    # comment = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"rows": 3}))
 
     class Meta:
         model = ExchangeProposal
-        fields = ["ad_sender", "ad_receiver", "comment"]
+        # fields = ["ad_sender", "ad_receiver", "comment"]
+        fields = ["comment"]
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
+
+        if self.instance and self.instance.pk:
+            self.fields["ad_sender"].initial = self.instance.ad_sender.id
+            self.fields["ad_receiver"].initial = self.instance.ad_receiver.id
 
     def clean_ad_sender(self):
         try:

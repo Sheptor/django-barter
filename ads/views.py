@@ -63,17 +63,47 @@ class CreateAdView(LoginRequiredMixin, generic.CreateView):
     template_name = "ads/ad_form.html"
 
     def form_valid(self, form):
-        form.instance.user = self.request.user
-        return super(CreateAdView, self).form_valid(form)
+        self.request.session["tmp_ad_data"] = form.cleaned_data
+        return redirect("ads:ad_confirmation")
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect("users:login")
         else:
-            return super(CreateAdView, self).dispatch(request, *args, **kwargs)
+            return super().dispatch(request, *args, **kwargs)
 
-    def get_success_url(self):
-        return reverse_lazy("ads:ad_detail", kwargs={"pk": self.object.id})
+    def get_initial(self):
+        initial = super().get_initial()
+        tmp_ad_data = self.request.session.get("tmp_ad_data")
+        if tmp_ad_data:
+            for i_key, i_value in tmp_ad_data.items():
+                initial[i_key] = i_value
+        return initial
+
+
+class AdConfirmationView(LoginRequiredMixin, generic.CreateView):
+    model = Ad
+    template_name = "ads/ad_detail.html"
+    form_class = NewAdForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tmp_ad_data = self.request.session.get("tmp_ad_data")
+        if not tmp_ad_data:
+            raise PermissionDenied("Данные не найдены")
+        tmp_ad = Ad(user=self.request.user, **tmp_ad_data)
+        tmp_ad.id = "___"
+        context["ad"] = tmp_ad
+        context["is_owner"] = tmp_ad.user == self.request.user
+        context["is_confirmation"] = True
+        return context
+
+    def post(self, request, *args, **kwargs):
+        tmp_ad_data = request.session.get("tmp_ad_data")
+        if not tmp_ad_data:
+            return redirect("ads:new_ad")
+        ad = Ad.objects.create(user=request.user, **tmp_ad_data)
+        return redirect("ads:ad_detail", pk=ad.id)
 
 
 class AdDetailView(generic.DetailView):
@@ -85,6 +115,7 @@ class AdDetailView(generic.DetailView):
         context = super().get_context_data(**kwargs)
         context["user_have_ads"] = Ad.objects.filter(user=self.request.user).exists()
         context["is_owner"] = self.object.user == self.request.user
+        context["is_confirmation"] = False
 
         return context
 
@@ -105,6 +136,13 @@ class AdEditView(LoginRequiredMixin, generic.UpdateView):
             raise PermissionDenied("У вас нет прав для изменения владельца объявления")
         return ad
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["is_owner"] = self.object.user == self.request.user
+        context["is_confirmation"] = False
+        context["is_edit"] = True
+        return context
+
     def get_success_url(self):
         return reverse_lazy("ads:ad_detail", kwargs={"pk": self.object.id})
 
@@ -116,6 +154,7 @@ class AdDeleteView(LoginRequiredMixin, generic.DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["is_delete"] = True
+        context["is_owner"] = self.object.user == self.request.user
         return context
 
     def get_object(self, queryset=None):
@@ -158,7 +197,10 @@ class CreateExchangeProposalView(LoginRequiredMixin, generic.CreateView):
         return initial
 
     def form_valid(self, form):
-        return super().form_valid(form)
+        self.request.session["tmp_exchange_data"] = form.cleaned_data
+        self.request.session["tmp_exchange_data"]["ad_sender"] = form.cleaned_data["ad_sender"].id
+        self.request.session["tmp_exchange_data"]["ad_receiver"] = form.cleaned_data["ad_receiver"].id
+        return redirect("ads:exchange_confirmation")
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -171,8 +213,36 @@ class CreateExchangeProposalView(LoginRequiredMixin, generic.CreateView):
         else:
             return super().dispatch(request, *args, **kwargs)
 
-    def get_success_url(self):
-        return reverse_lazy("ads:exchange_detail", kwargs={"pk": self.object.id})
+
+class ExchangeProposalConfirmationView(LoginRequiredMixin, generic.CreateView):
+    model = ExchangeProposal
+    template_name = "ads/exchange_detail.html"
+    form_class = NewExchangeProposalForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tmp_exchange_data = self.request.session.get("tmp_exchange_data")
+        if not tmp_exchange_data:
+            raise PermissionDenied("Данные не найдены")
+        tmp_exchange_data["ad_sender"] = Ad.objects.get(pk=tmp_exchange_data["ad_sender"])
+        tmp_exchange_data["ad_receiver"] = Ad.objects.get(pk=tmp_exchange_data["ad_receiver"])
+        tmp_exchange = ExchangeProposal(**tmp_exchange_data)
+        tmp_exchange.id = "___"
+        tmp_exchange.created_at = "_" * 15
+        context["exchange_proposal"] = tmp_exchange
+        context["is_owner"] = tmp_exchange.ad_sender.user == self.request.user
+        context["is_confirmation"] = True
+        return context
+
+    def post(self, request, *args, **kwargs):
+        tmp_exchange_data = request.session.get("tmp_exchange_data")
+        if not tmp_exchange_data:
+            return redirect("ads:new_exchange")
+        tmp_exchange_data["ad_sender"] = Ad.objects.get(pk=tmp_exchange_data["ad_sender"])
+        tmp_exchange_data["ad_receiver"] = Ad.objects.get(pk=tmp_exchange_data["ad_receiver"])
+        exchange = ExchangeProposal.objects.create(**tmp_exchange_data)
+        return redirect("ads:exchange_detail", pk=exchange.id)
+
 
 
 class ExchangeProposalDetailView(LoginRequiredMixin, generic.DetailView):
@@ -223,11 +293,18 @@ class ExchangeProposalEditView(LoginRequiredMixin, generic.UpdateView):
     def get_success_url(self):
         return reverse_lazy("ads:exchange_detail", kwargs={"pk": self.object.id})
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["is_owner"] = self.object.ad_sender.user == self.request.user
+        context["is_edit"] = True
+        return context
+
     def get_object(self, queryset=None):
         exchange = get_object_or_404(ExchangeProposal, pk=self.kwargs.get("pk"))
         if exchange.ad_sender.user != self.request.user:
             raise PermissionDenied("У вас нет прав для изменения владельца объявления")
         return exchange
+
 
 
 class ExchangeProposalDeleteView(LoginRequiredMixin, generic.DeleteView):
@@ -246,12 +323,6 @@ class ExchangeProposalDeleteView(LoginRequiredMixin, generic.DeleteView):
         if exchange.ad_sender.user != self.request.user:
             raise PermissionDenied("У вас не достаточно прав для изменения объявления")
         return exchange
-
-    def form_invalid(self, form):
-        super().form_valid(form)
-        print(form["ad_sender"])
-        print(form["ad_receiver"])
-        raise PermissionDenied("123")
 
     def get_success_url(self):
         return reverse_lazy("ads:exchanges")

@@ -14,14 +14,31 @@
     {% if ad.image_url %}
         <img src="{{ ad.image_url }}" alt="{{ ad.title }}" class="ad-image">
     {% endif %}
-    <a href="{% url 'ads:ad_detail' ad.id %}" class="ad-link">
+    <p class="ad-description">
         <h2 class="ad-title">{{ ad.title }}</h2>
-    </a>
+    </p>
     <p class="ad-description">Описание: {{ ad.description }}</p>
     <p class="ad-description">Категория: {{ ad.category }}</p>
     <p class="ad-description">Состояние: {{ ad.condition }}</p>
     <p class="ad-description">Дата публикации: {{ ad.created_at }}</p>
-    {% if not is_owner and not is_delete %}
+    {% if is_owner %}
+        {% if is_confirmation %}
+            <form method="post">
+                {% csrf_token %}
+                <button class="add-button">Разместить объявление</button>
+            </form>
+            <button onclick="location.href='{% url 'ads:new_ad' %}'" class="add-button">Вернуться к редактированию</button>
+        {% elif not is_delete %}
+            <button onclick="location.href='{% url 'ads:ad_edit' ad.id%}'" class="add-button">Изменить объявление</button>
+            <br><a href="{% url 'ads:ad_delete' ad.pk %}">Удалить объявление</a>
+        {% elif is_delete %}
+            <form method="post">
+                {% csrf_token %}
+                <p>Вы действительно хотите удалить объявление?</p>
+                <button class="delete-button">Удалить безвозвратно</button>
+            </form>
+        {% endif %}
+    {% else %}
         {% if user_have_ads %}
             <br><button onclick="location.href='{% url 'ads:new_exchange' ad.id %}'" class="add-button">Предложить обмен</button>
         {% else %}
@@ -29,19 +46,6 @@
             <br>Для обмена сначала создайте своё:</h2>
             <button onclick="location.href='{% url 'ads:new_ad' %}'" class="add-button">Создать объявление</button>
         {% endif %}
-    {% endif %}
-    {% if is_owner and not is_delete %}
-        <button onclick="location.href='{% url 'ads:ad_edit' ad.id%}'" class="add-button">Изменить объявление</button>
-    {% endif %}
-    {% if is_delete %}
-        <form method="post">
-                {% csrf_token %}
-                <p>Вы действительно хотите удалить объявление?</p>
-                <button class="delete-button">Удалить безвозвратно</button>
-            </form>
-    {% endif %}
-    {% if is_owner %}
-        <br><a href="{% url 'ads:ad_delete' ad.pk %}">Удалить объявление</a>
     {% endif %}
 </div>
 {% endblock %}

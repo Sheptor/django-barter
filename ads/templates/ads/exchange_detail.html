@@ -8,10 +8,10 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'ads/style.css' %}">
 <br><button onclick="location.href='{% url 'home' %}'" class="navigation-button">Django-barter -> На главную</button>
-<h1>Предложение обмена {{ exchange_proposal.id }}</h1>
+<h1 class="ad-title">Предложение обмена {{ exchange_proposal.id }}</h1>
 <div class="comparison-container">
     <div class="ad-card-in-comparison">
-        <h2>Обмен товара {{ exchange_proposal.ad_sender.id }}:</h2>
+        <h2 class="ad-title">Обмен товара {{ exchange_proposal.ad_sender.id }}:</h2>
         {% if exchange_proposal.ad_sender.image_url %}
             <img src="{{ exchange_proposal.ad_sender.image_url }}" alt="{{ exchange_proposal.ad_sender.title }}" class="ad-image">
         {% endif %}
@@ -51,9 +51,14 @@
             <p>Вы действительно хотите удалить предложение обмена?</p>
             <button class="delete-button">Удалить безвозвратно</button>
         </form>
-    {% else %}
+    {% elif not is_confirmation %}
         <button onclick="location.href='{% url 'ads:exchange_edit' exchange_proposal.pk%}'" class="add-button">Изменить объявление</button>
         <br><a href="{% url 'ads:exchange_delete' exchange_proposal.id %}">Удалить объявление</a>
+    {% elif is_confirmation %}
+        <form method="post">
+            {% csrf_token %}
+            <button class="add-button">Предложить обмен</button>
+        </form>
     {% endif %}
 {% else %}
     {% if exchange_proposal.status == "waiting" %}
