@@ -11,11 +11,9 @@ class NewAdForm(forms.ModelForm):
 class NewExchangeProposalForm(forms.ModelForm):
     ad_sender = forms.IntegerField(min_value=1)
     ad_receiver = forms.IntegerField(min_value=1)
-    # comment = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"rows": 3}))
 
     class Meta:
         model = ExchangeProposal
-        # fields = ["ad_sender", "ad_receiver", "comment"]
         fields = ["comment"]
 
     def __init__(self, *args, **kwargs):
@@ -65,5 +63,6 @@ class NewExchangeProposalForm(forms.ModelForm):
                 return
 
         if exchange.status != "rejected":
-            self.errors["ad_sender"] = f"Предложение обмена {ad_sender.id} на {ad_receiver.id} уже {exchange.status}"
+            self.errors["ad_sender"] = (f"Предложение обмена {ad_sender.id} на {ad_receiver.id} уже "
+                                        f"{ExchangeProposal.ALLOWED_STATUSES[exchange.status]}")
             raise ValidationError("Ошибка полей")

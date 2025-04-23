@@ -168,6 +168,7 @@ class AdDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 
 class ExchangeProposalListView(LoginRequiredMixin, generic.ListView):
+    page_pattern = re.compile(r"page=\d+&?")
     model = ExchangeProposal
     template_name = "ads/exchange_list.html"
     context_object_name = "exchanges_list"
@@ -176,11 +177,29 @@ class ExchangeProposalListView(LoginRequiredMixin, generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["user_have_exchanges"] = Ad.objects.filter(user=self.request.user).exists()
-
+        context["status_dict"] = ExchangeProposal.ALLOWED_STATUSES
+        query_params = self.request.GET.urlencode()
+        query_params = re.sub(self.page_pattern, "", query_params)
+        context["current_params"] = query_params
         return context
 
     def get_queryset(self):
-        return ExchangeProposal.objects.filter(Q(ad_sender__user=self.request.user) | Q(ad_receiver__user=self.request.user)).all()
+
+        is_sender = self.request.GET.get("is_sender")
+        if is_sender == "sender":
+            exchanges_queryset = ExchangeProposal.objects.filter(ad_sender__user=self.request.user).all()
+        elif is_sender == "receiver":
+            exchanges_queryset = ExchangeProposal.objects.filter(ad_receiver__user=self.request.user).all()
+        else:
+            exchanges_queryset = ExchangeProposal.objects.filter(
+                Q(ad_sender__user=self.request.user) | Q(ad_receiver__user=self.request.user)
+            ).all()
+
+        status = self.request.GET.get("status")
+        if status:
+            exchanges_queryset = exchanges_queryset.filter(status=status)
+
+        return exchanges_queryset
 
 
 class CreateExchangeProposalView(LoginRequiredMixin, generic.CreateView):
@@ -244,7 +263,6 @@ class ExchangeProposalConfirmationView(LoginRequiredMixin, generic.CreateView):
         return redirect("ads:exchange_detail", pk=exchange.id)
 
 
-
 class ExchangeProposalDetailView(LoginRequiredMixin, generic.DetailView):
     model = ExchangeProposal
     template_name = "ads/exchange_detail.html"
@@ -304,7 +322,6 @@ class ExchangeProposalEditView(LoginRequiredMixin, generic.UpdateView):
         if exchange.ad_sender.user != self.request.user:
             raise PermissionDenied("У вас нет прав для изменения владельца объявления")
         return exchange
-
 
 
 class ExchangeProposalDeleteView(LoginRequiredMixin, generic.DeleteView):

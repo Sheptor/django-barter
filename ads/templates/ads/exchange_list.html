@@ -15,11 +15,55 @@
     <h2>Вам нечего предложить в обмен!</h2>
     <button onclick="location.href='{% url 'ads:new_ad' %}'" class="add-button">Создать объявление</button>
 {% endif %}
+
+<br><div class="filters-container">
+
+    <form method="get" class="filter-form">
+        <!--Пользователь отправитель или получатель-->
+        <div class="filter-group">
+            <select name="is_sender">
+                <option value="">Любой отправитель</option>
+                <option value="sender"
+                    {% if request.GET.is_sender == "sender" %}
+                        selected
+                    {% endif %}>
+                    Вы отправитель
+                </option>
+                <option value="receiver"
+                    {% if request.GET.is_sender == "receiver" %}
+                        selected
+                    {% endif %}>
+                Вы получатель
+                </option>
+            </select>
+        </div>
+
+        <!--Фильтрация по статусу-->
+        <div class="filter-group">
+            <select name="status">
+                <option value="">Любой статус</option>
+                {% for i_status, i_status_display in status_dict.items %}
+                    <option value="{{ i_status }}"
+                        {% if request.GET.status == i_status %}
+                            selected
+                        {% endif %}>
+                        {{ i_status_display }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="filter-button">Применить фильтры</button>
+        <a href="?" class="reset">Сбросить</a>
+    </form>
+</div>
+
+<!--Верхняя пагинация-->
 <br><div class="pagination">
     <span class="step-links">
         {% if page_obj.has_previous %}
-            <a href="?page=1">&laquo; первая</a>
-            <a href="?page={{ page_obj.previous_page_number }}">предыдущая</a>
+            <a href="?page=1&{{ current_params }}">&laquo; первая</a>
+            <a href="?page={{ page_obj.previous_page_number }}&{{ current_params }}">предыдущая</a>
         {% endif %}
 
         <span class="current">
@@ -27,11 +71,13 @@
         </span>
 
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}">следующая</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}">последняя &raquo;</a>
+            <a href="?page={{ page_obj.next_page_number }}&{{ current_params }}">следующая</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}&{{ current_params }}">последняя &raquo;</a>
         {% endif %}
     </span>
 </div>
+
+<!--Отображение предложений обмена-->
 {% if page_obj %}
     <div class="ad-grid">
         {% for exchange in page_obj %}
@@ -57,11 +103,13 @@
 {% else %}
     <p>Нет предложений обмена.</p>
 {% endif %}
+
+<!--Нижняя пагинация-->
 <div class="pagination">
     <span class="step-links">
         {% if page_obj.has_previous %}
-            <a href="?page=1">&laquo; первая</a>
-            <a href="?page={{ page_obj.previous_page_number }}">предыдущая</a>
+            <a href="?page=1&{{ current_params }}">&laquo; первая</a>
+            <a href="?page={{ page_obj.previous_page_number }}&{{ current_params }}">предыдущая</a>
         {% endif %}
 
         <span class="current">
@@ -69,8 +117,8 @@
         </span>
 
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}">следующая</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}">последняя &raquo;</a>
+            <a href="?page={{ page_obj.next_page_number }}&{{ current_params }}">следующая</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}&{{ current_params }}">последняя &raquo;</a>
         {% endif %}
     </span>
 </div>
