@@ -21,7 +21,7 @@ class ExchangeProposal(models.Model):
     status_choices = tuple(ALLOWED_STATUSES.items())
     ad_sender = models.ForeignKey(Ad, on_delete=models.CASCADE, related_name="sender", default="", verbose_name="Ваш товар")
     ad_receiver = models.ForeignKey(Ad, on_delete=models.CASCADE, related_name="receiver", default="", verbose_name="Обменять на")
-    comment = models.CharField(max_length=500, verbose_name="Комментарий", default="")
+    comment = models.CharField(max_length=500, verbose_name="Комментарий")
     status = models.CharField(choices=status_choices, default="waiting", verbose_name="Статус предложения")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации предложения")
 

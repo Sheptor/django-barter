@@ -53,6 +53,20 @@
             </select>
         </div>
 
+        <div class="filter-group">
+            <select name="ordering">
+                <option value="-created_at"
+                    {% if request.GET.ordering == "-created_at" %}
+                        selected
+                    {% endif %}>Сначала новые
+                </option>
+                <option value="created_at"
+                    {% if request.GET.ordering == "created_at" %}
+                        selected
+                    {% endif %}>Сначала старые
+                </option>
+            </select>
+        </div>
         <button type="submit" class="filter-button">Применить фильтры</button>
         <a href="?" class="reset">Сбросить</a>
     </form>

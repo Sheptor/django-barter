@@ -199,6 +199,10 @@ class ExchangeProposalListView(LoginRequiredMixin, generic.ListView):
         if status:
             exchanges_queryset = exchanges_queryset.filter(status=status)
 
+        ordering = self.request.GET.get("ordering", "-created_at")
+        if ordering in {"created_at", "-created_at"}:
+            exchanges_queryset = exchanges_queryset.order_by(ordering)
+
         return exchanges_queryset
 
 
@@ -322,6 +326,14 @@ class ExchangeProposalEditView(LoginRequiredMixin, generic.UpdateView):
         if exchange.ad_sender.user != self.request.user:
             raise PermissionDenied("У вас нет прав для изменения владельца объявления")
         return exchange
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        self.object.ad_sender = form.cleaned_data.get("ad_sender")
+        self.object.ad_receiver = form.cleaned_data.get("ad_receiver")
+        self.object.comment = form.cleaned_data.get("comment")
+        self.object.save()
+        return response
 
 
 class ExchangeProposalDeleteView(LoginRequiredMixin, generic.DeleteView):

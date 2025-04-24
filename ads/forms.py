@@ -49,11 +49,11 @@ class NewExchangeProposalForm(forms.ModelForm):
         return ad_receiver
 
     def clean(self):
-        try:
-            ad_sender = self.cleaned_data["ad_sender"]
-            ad_receiver = self.cleaned_data["ad_receiver"]
-        except KeyError:
-            raise ValidationError("Ошибка полей")
+        ad_sender = self.cleaned_data.get("ad_sender")
+        ad_receiver = self.cleaned_data.get("ad_receiver")
+        if not ad_sender or not ad_receiver:
+            return self.cleaned_data
+
         try:
             exchange = ExchangeProposal.objects.get(ad_sender=ad_sender.id, ad_receiver=ad_receiver.id)
         except ExchangeProposal.DoesNotExist:
@@ -65,4 +65,4 @@ class NewExchangeProposalForm(forms.ModelForm):
         if exchange.status != "rejected":
             self.errors["ad_sender"] = (f"Предложение обмена {ad_sender.id} на {ad_receiver.id} уже "
                                         f"{ExchangeProposal.ALLOWED_STATUSES[exchange.status]}")
-            raise ValidationError("Ошибка полей")
+        return self.cleaned_data
