@@ -7,6 +7,7 @@
 <body>
 {% load static %}
 <link rel="stylesheet" href="{% static 'ads/style.css' %}">
+<link rel="icon" href="{% static 'ads/favicon.ico' %}" />
 <br><button onclick="location.href='{% url 'home' %}'" class="navigation-button">Django-barter -> На главную</button>
 <br><button onclick="location.href='{% url 'ads:ads' %}'" class="navigation-button">Список товаров на обмен</button>
 <br><button onclick="location.href='{% url 'ads:exchanges' %}'" class="navigation-button">Список предложений обмена</button>

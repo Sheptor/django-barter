@@ -1,0 +1,32 @@
+version: "3.9"
+services:
+  app:
+    build:
+      dockerfile: ./Dockerfile
+    command:
+      - gunicorn
+      - config.wsgi:application
+      - --bind
+      - "0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    restart: always
+    env_file:
+      - .env
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "200k"
+    volumes:
+      - ./database:/app/database
+      - ./static:/app/static
+  nginx:
+    build:
+      dockerfile: ./nginx/Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./static:/app/static
+    depends_on:
+      - app
