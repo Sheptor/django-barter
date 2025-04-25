@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect
 from django.views import generic
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 
@@ -61,6 +61,7 @@ class CreateAdView(LoginRequiredMixin, generic.CreateView):
     model = Ad
     form_class = NewAdForm
     template_name = "ads/ad_form.html"
+    login_url = reverse_lazy("users:login")
 
     def form_valid(self, form):
         self.request.session["tmp_ad_data"] = form.cleaned_data
@@ -85,6 +86,7 @@ class AdConfirmationView(LoginRequiredMixin, generic.CreateView):
     model = Ad
     template_name = "ads/ad_detail.html"
     form_class = NewAdForm
+    login_url = reverse_lazy("users:login")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -129,6 +131,7 @@ class AdEditView(LoginRequiredMixin, generic.UpdateView):
     model = Ad
     template_name = "ads/ad_form.html"
     form_class = NewAdForm
+    login_url = reverse_lazy("users:login")
 
     def get_object(self, queryset=None):
         ad = get_object_or_404(Ad, pk=self.kwargs.get("pk"))
@@ -150,6 +153,7 @@ class AdEditView(LoginRequiredMixin, generic.UpdateView):
 class AdDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Ad
     template_name = "ads/ad_detail.html"
+    login_url = reverse_lazy("users:login")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -173,6 +177,7 @@ class ExchangeProposalListView(LoginRequiredMixin, generic.ListView):
     template_name = "ads/exchange_list.html"
     context_object_name = "exchanges_list"
     paginate_by = 15
+    login_url = reverse_lazy("users:login")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -210,6 +215,7 @@ class CreateExchangeProposalView(LoginRequiredMixin, generic.CreateView):
     model = ExchangeProposal
     form_class = NewExchangeProposalForm
     template_name = "ads/exchange_form.html"
+    login_url = reverse_lazy("users:login")
 
     def get_initial(self):
         initial = super().get_initial()
@@ -241,6 +247,7 @@ class ExchangeProposalConfirmationView(LoginRequiredMixin, generic.CreateView):
     model = ExchangeProposal
     template_name = "ads/exchange_detail.html"
     form_class = NewExchangeProposalForm
+    login_url = reverse_lazy("users:login")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -271,6 +278,7 @@ class ExchangeProposalDetailView(LoginRequiredMixin, generic.DetailView):
     model = ExchangeProposal
     template_name = "ads/exchange_detail.html"
     context_object_name = "exchange_proposal"
+    login_url = reverse_lazy("users:login")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -311,6 +319,7 @@ class ExchangeProposalEditView(LoginRequiredMixin, generic.UpdateView):
     form_class = NewExchangeProposalForm
     template_name = "ads/exchange_form.html"
     context_object_name = "exchange_proposal"
+    login_url = reverse_lazy("users:login")
 
     def get_success_url(self):
         return reverse_lazy("ads:exchange_detail", kwargs={"pk": self.object.id})
@@ -340,6 +349,7 @@ class ExchangeProposalDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = ExchangeProposal
     template_name = "ads/exchange_detail.html"
     context_object_name = "exchange_proposal"
+    login_url = reverse_lazy("users:login")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
