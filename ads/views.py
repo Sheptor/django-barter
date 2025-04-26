@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect
 from django.views import generic
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 
@@ -234,6 +234,7 @@ class CreateExchangeProposalView(LoginRequiredMixin, generic.CreateView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs["user"] = self.request.user
+        kwargs["is_edit"] = True
         return kwargs
 
     def dispatch(self, request, *args, **kwargs):
@@ -341,6 +342,7 @@ class ExchangeProposalEditView(LoginRequiredMixin, generic.UpdateView):
         self.object.ad_sender = form.cleaned_data.get("ad_sender")
         self.object.ad_receiver = form.cleaned_data.get("ad_receiver")
         self.object.comment = form.cleaned_data.get("comment")
+        self.object.set_status("waiting")
         self.object.save()
         return response
 

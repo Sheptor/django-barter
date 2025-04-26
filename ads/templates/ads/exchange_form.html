@@ -15,7 +15,10 @@
         <br>{{ form.ad_sender }}{{ form.ad_sender.id }}
 
         {% if form.ad_sender.errors %}
-            <div class="ad-error">{{ form.ad_sender.errors }}</div>
+            <div class="ad-error">
+                {% for i_error in form.ad_sender.errors %}
+                    {{ i_error }}<br>
+                {% endfor %}</div>
         {% endif %}</p>
         <p>Обменять на:
         <br>{{ form.ad_receiver }}
@@ -32,6 +35,7 @@
             <div class="ad-error">{{ form.exchange.errors }}</div>
         {% endif %}
         {% if is_edit %}
+            <h2>При нажатии статус предложения изменится на "ожидает"!</h2>
             <br><button type="submit" class="add-button">Изменить</button>
         {% else %}
             <br><button type="submit" class="add-button">Предварительный просмотр</button>

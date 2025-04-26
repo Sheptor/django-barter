@@ -1,5 +1,7 @@
 from django.core.exceptions import ValidationError
 from django import forms
+from django.urls import reverse
+from django.utils.safestring import mark_safe
 from .models import Ad, ExchangeProposal
 
 
@@ -17,6 +19,7 @@ class NewExchangeProposalForm(forms.ModelForm):
         fields = ["comment"]
 
     def __init__(self, *args, **kwargs):
+        self.is_edit = kwargs.pop("is_edit", None)
         self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
 
@@ -53,16 +56,19 @@ class NewExchangeProposalForm(forms.ModelForm):
         ad_receiver = self.cleaned_data.get("ad_receiver")
         if not ad_sender or not ad_receiver:
             return self.cleaned_data
-
-        try:
-            exchange = ExchangeProposal.objects.get(ad_sender=ad_sender.id, ad_receiver=ad_receiver.id)
-        except ExchangeProposal.DoesNotExist:
+        if self.is_edit:
             try:
-                exchange = ExchangeProposal.objects.get(ad_sender=ad_receiver.id, ad_receiver=ad_sender.id)
+                exchange = ExchangeProposal.objects.get(ad_sender=ad_sender.id, ad_receiver=ad_receiver.id)
             except ExchangeProposal.DoesNotExist:
-                return
-
-        if exchange.status != "rejected":
-            self.errors["ad_sender"] = (f"Предложение обмена {ad_sender.id} на {ad_receiver.id} уже "
-                                        f"{ExchangeProposal.ALLOWED_STATUSES[exchange.status]}")
+                try:
+                    exchange = ExchangeProposal.objects.get(ad_sender=ad_receiver.id, ad_receiver=ad_sender.id)
+                except ExchangeProposal.DoesNotExist:
+                    return self.cleaned_data
+            self.errors["ad_sender"] = [f"Предложение обмена {ad_sender.id} на {ad_receiver.id} уже существует"]
+            self.errors["ad_sender"].append(mark_safe(
+                '<a href="{ref}">{exchange}</a>'.format(
+                    ref=reverse("ads:exchange_detail", kwargs={"pk": exchange.id}),
+                    exchange=f"Предложение обмена {exchange.id}"
+                )
+            ))
         return self.cleaned_data

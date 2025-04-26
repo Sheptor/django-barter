@@ -34,7 +34,7 @@ else:
 DEBUG = os.getenv("DJANGO_DEBUG", "0") == "1"
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "0.0.0.0"] + os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
-
+CSRF_TRUSTED_ORIGINS = [] + os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
 
 # Application definition
 

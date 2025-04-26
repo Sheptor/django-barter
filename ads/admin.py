@@ -8,10 +8,6 @@ class AdInLine(admin.TabularInline):
 
 
 class ExchangeProposalAdmin(admin.ModelAdmin):
-    # fieldsets = [
-    #     (None, {"fields": ["Sender user", "Receiver user", "Sender ad", "Receiver ad"]}),
-    #     ("Date information", {"fields": ["created_at"]})
-    # ]
     list_display = ["ad_sender", "ad_receiver", "created_at"]
     list_filter = ["created_at"]
     readonly_fields = ["created_at"]

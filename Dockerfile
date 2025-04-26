@@ -14,8 +14,8 @@ COPY ./.env.template /app/.env.template
 COPY ./nginx/ /app/nginx
 COPY ./config/ /app/config
 COPY ./users/ /app/users
-COPY ./.env /app/.env
-COPY ./ads/ /app/ads
 COPY ./static/ /app/static
+COPY ./ads/ /app/ads
+COPY ./.env /app/.env
 
 CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000"]

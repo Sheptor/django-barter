@@ -497,7 +497,9 @@ class TestExchangeProposal(TestCase):
 
         response_3 = self.client.post(reverse("ads:new_exchange"), data=exchange_form_data)
         self.assertEqual(response_3.status_code, 200)
-        self.assertEqual(response_3.context["form"].errors["ad_sender"], f"Предложение обмена {self.ad_1.id} на {self.ad_2.id} уже ожидает")
+        self.assertEqual(response_3.context["form"].errors["ad_sender"][0], f"Предложение обмена {self.ad_1.id} на {self.ad_2.id} уже существует")
+        self.assertIn("Предложение обмена 1", response_3.context["form"].errors["ad_sender"][1])
+        self.assertIn(reverse("ads:exchange_detail", kwargs={"pk": 1}), response_3.context["form"].errors["ad_sender"][1])
 
         self.client.force_login(self.user_2)
         counter_exchange_form_data = {
@@ -507,7 +509,9 @@ class TestExchangeProposal(TestCase):
         }
         response_4 = self.client.post(reverse("ads:new_exchange"), data=counter_exchange_form_data)
         self.assertEqual(response_4.status_code, 200)
-        self.assertEqual(response_4.context["form"].errors["ad_sender"], f"Предложение обмена {self.ad_2.id} на {self.ad_1.id} уже ожидает")
+        self.assertEqual(response_4.context["form"].errors["ad_sender"][0], f"Предложение обмена {self.ad_2.id} на {self.ad_1.id} уже существует")
+        self.assertIn("Предложение обмена 1", response_3.context["form"].errors["ad_sender"][1])
+        self.assertIn(reverse("ads:exchange_detail", kwargs={"pk": 1}), response_3.context["form"].errors["ad_sender"][1])
 
     def test_create_view_cant_propose_not_owned_ad(self):
         exchange_form_data = {

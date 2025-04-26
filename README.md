@@ -38,10 +38,11 @@ $ python3 ./generate_secret_key.py
 $ nano ./.env
 
   GNU nano 7.2                                                                           ./.env                                                                                    
-SECRET_KEY=the_secret_key | вставьте сгенерированный или придуманный секретный ключ
-DJANGO_LOGLEVEL=INFO | выберите один из (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-DJANGO_DEBUG=1 | 1 - ТОЛЬКО ДЛЯ РАЗРАБОТКИ, 0 - для продакшена
-DJANGO_ALLOWED_HOSTS=example1.com,example2.ru,example3.ru | вставьте доступные домены сайта
+SECRET_KEY=the_secret_key | вставьте сгенерированный или придуманный секретный ключ, подробнее https://docs.djangoproject.com/en/5.2/ref/settings/#secret-key
+DJANGO_LOGLEVEL=INFO | выберите один из (DEBUG, INFO, WARNING, ERROR, CRITICAL), подробнее https://docs.djangoproject.com/en/5.2/topics/logging/#topic-logging-parts-loggers
+DJANGO_DEBUG=1 | 1 - ТОЛЬКО ДЛЯ РАЗРАБОТКИ, 0 - для продакшена, подробнее https://docs.djangoproject.com/en/5.2/ref/settings/#std-setting-DEBUG
+DJANGO_ALLOWED_HOSTS=example1.com,example2.ru,example3.ru | вставьте доступные домены сайта, подробнее https://docs.djangoproject.com/en/5.2/ref/settings/#std-setting-ALLOWED_HOSTS 
+DJANGO_CSRF_TRUSTED_ORIGINS=example1.com,example2.ru,example3.ru | вставьте доступные домены сайта, подробнее https://docs.djangoproject.com/en/5.2/ref/settings/#std-setting-CSRF_TRUSTED_ORIGINS
 
 # Чтобы сохранить ctrl+O, Enter,
 # Чтобы закрыть nano ctrl+X

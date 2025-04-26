@@ -13,9 +13,10 @@
         {% csrf_token %}
         <div class="form-row">
             {{ form.username.errors }}
-            Имя пользователя:<br>{{ form.username }}
+            Имя пользователя:
+            <br>{{ form.username }}
             {% if form.username.errors %}
-            <div class="auth-error">{{ field.username.errors }}</div>
+                <div class="auth-error">{{ field.username.errors }}</div>
             {% endif %}
         </div>
         <div class="form-row">
@@ -23,9 +24,16 @@
             <br>{{ form.password }}
             <span class="helptext" id="id_password1_helptext"></span>
             {% if form.password.errors %}
-            <div class="auth-error">{{ form.password.errors }}</div>
+                <div class="auth-error">{{ form.password.errors }}</div>
             {% endif %}
         </div>
+        {% if form.errors %}
+            <div class="auth-error">
+                {% for i_error in form.non_field_errors %}
+                    {{ i_error }}<br>
+                {% endfor %}
+            </div>
+        {% endif %}
         <div class="submit-row">
             <br><button type="submit" class="add-button">Авторизоваться</button>
         </div>
